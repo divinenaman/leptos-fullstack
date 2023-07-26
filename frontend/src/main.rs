@@ -2,6 +2,7 @@ use leptos::*;
 use leptos_fullstack_common::Thing;
 use leptos_meta::*;
 use leptos_router::*;
+use api::call_hello_api;
 
 pub fn main() {
     _ = console_log::init_with_level(log::Level::Debug);
@@ -32,6 +33,8 @@ pub fn App(cx: Scope) -> impl IntoView {
 #[component]
 fn Home(cx: Scope) -> impl IntoView {
     let thing = Thing::new("Hello from frontend".to_string());
+    let hello_api_once = create_resource(cx, || (), |_| async move { call_hello_api().await });
+    
     view! { cx,
         <div class="flex flex-col items-center justify-center min-h-screen bg-red-600">
             <div class="flex flex-col items-center justify-start px-4 py-8 mx-auto bg-white border-4 rounded-lg ">
@@ -39,7 +42,10 @@ fn Home(cx: Scope) -> impl IntoView {
                 <div class="items-left">
                     <Header2 text="Frontend" />
                     <p class="my-1">"This value ⤵️ is generated in-browser:"</p>
-                    <pre>{thing.browser_view()}</pre>
+                    <pre>{move || match hello_api_once.read(cx) {
+                        None => Thing::new("Loading..."),
+                        Some(data) => Thing::new(data)
+                    }}</pre>
                     <Header2 text="Backend" />
                     <Link link="/hello" text="request backend /hello API" />
                 </div>
