@@ -16,6 +16,7 @@
       imports = [
         inputs.treefmt-nix.flakeModule
         ./nix/flake-module.nix
+        ./nix/tauri-flake-module.nix
       ];
       perSystem = { config, self', pkgs, lib, system, ... }: {
         _module.args.pkgs = import inputs.nixpkgs {
@@ -42,6 +43,7 @@
           inputsFrom = [
             config.treefmt.build.devShell
             self'.devShells.leptos-fullstack
+            self'.devShells.tauri-dev
           ];
           nativeBuildInputs = with pkgs; [
             just
